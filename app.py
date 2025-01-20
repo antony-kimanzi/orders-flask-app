@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_migrate import Migrate
-from models import db
+from models import TokenBlocklist, db
 from flask_jwt_extended import JWTManager
 from datetime import timedelta
 
@@ -22,3 +22,10 @@ from views import *
 app.register_blueprint(user_bp)
 app.register_blueprint(order_bp)
 app.register_blueprint(auth_bp)
+
+@jwt.token_in_blocklist_loader
+def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
+    jti = jwt_payload["jti"]
+    token = db.session.query(TokenBlocklist.id).filter_by(jti=jti).scalar()
+
+    return token is not None

@@ -19,10 +19,16 @@ class Order(db.Model):
     __tablename__ = "orders"
 
     id = db.Column(db.Integer, primary_key = True)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable = False)
+    order_ref = db.Column(db.String(50), unique=True, nullable=False)
     items_ordered = db.Column(db.String(128), nullable = False)
     total_amount = db.Column(db.Integer, nullable = False)
     status = db.Column(db.String(40), nullable = False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable = False)
     date_ordered = db.Column(db.DateTime, nullable = False)
 
     user = db.relationship("User", back_populates = "order")
+
+class TokenBlocklist(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    jti = db.Column(db.String(36), nullable=False, index=True)
+    created_at = db.Column(db.DateTime, nullable=False)
