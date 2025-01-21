@@ -16,7 +16,7 @@ def login():
     user = User.query.filter_by(email = email).first()
 
     if user and check_password_hash(user.password, password):
-        access_token = create_access_token(identity=user.email)
+        access_token = create_access_token(identity=str(user.id))
         return jsonify({"access_token": access_token})
     else:
         return jsonify({"error":"Incorrect email/password."})
@@ -25,8 +25,8 @@ def login():
 @auth_bp.route("/current_user")
 @jwt_required()
 def current_user():
-    current_user_email = get_jwt_identity()
-    user = User.query.filter_by(email=current_user_email).first()
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
 
     return jsonify({"username":user.username, "email": user.email, "phone_number": user.phone_number})
 
